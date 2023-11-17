@@ -4,8 +4,6 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import base64
 
-# from model import ModelManager
-
 class WebcamApp:
     def __init__(self, window, window_title, on_capture_callback):
         self.window = window
@@ -23,6 +21,7 @@ class WebcamApp:
 
         self.photo = None
         self.text_on_screen = ""
+        self.text_y_position = 50  # Default y-position
         self.on_capture_callback = on_capture_callback
 
         self.window.after(10, self.update)
@@ -41,9 +40,9 @@ class WebcamApp:
 
             # Call the callback function with the base64 image
             reply_content = self.on_capture_callback(base64_image)
-            
+
             # Directly update the text on the screen
-            self.set_text_on_screen(reply_content)
+            self.set_text_on_screen(reply_content, self.text_y_position)
 
     def encode_image(self, image_path):
         with open(image_path, "rb") as image_file:
@@ -60,15 +59,20 @@ class WebcamApp:
 
             # Display the received text on the video frame
             if self.text_on_screen:
-                cv2.putText(frame, self.text_on_screen, (0, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-                   
+                lines = self.text_on_screen.split('\n')
+                y = self.text_y_position
+                for line in lines:
+                    cv2.putText(frame, line, (20, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                    y += 20  # Adjust the vertical spacing as needed
+
             self.photo = ImageTk.PhotoImage(image=Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
             self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
 
         self.window.after(10, self.update)
 
-    def set_text_on_screen(self, text):
+    def set_text_on_screen(self, text, y):
         self.text_on_screen = text
+        self.text_y_position = y
 
     def __del__(self):
         if self.vid.isOpened():
@@ -76,13 +80,11 @@ class WebcamApp:
 
 # Callback function to update the GUI with the received image
 def on_capture_callback(base64_image):
-    # reply = ModelManager(base64_image=base64_image)
     reply = "This is a long sentence that needs to be displayed on separate lines to ensure readability. It might contain multiple lines and can be quite lengthy."
     words = reply.split()
-    word_lists = [words[i:i+10] for i in range(0, len(words), 10)]
+    string_lists = [' '.join(words[i:i+10]) for i in range(0, len(words), 10)]
 
-    return word_lists
-
+    return "\n".join(string_lists)
 
 # Create a window and pass it to WebcamApp along with the callback function
 root = tk.Tk()
