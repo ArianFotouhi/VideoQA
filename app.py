@@ -45,7 +45,7 @@ class WebcamApp:
         if ret:
             # Save the captured frame to a file (you can customize the filename)
             image_path = "captured_image.png"
-            cv2.imwrite(image_path, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            cv2.imwrite(image_path, frame)
 
             # Encode the image to base64
             base64_image = self.encode_image(image_path)
