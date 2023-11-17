@@ -3,6 +3,10 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 import base64
+import threading
+from model import ModelManager
+
+# from model import ModelManager
 
 class WebcamApp:
     def __init__(self, window, window_title, on_capture_callback):
@@ -28,6 +32,14 @@ class WebcamApp:
         self.window.mainloop()
 
     def capture_image(self):
+        # Display "Just a sec..." message
+        self.set_text_on_screen("Just a sec...", self.text_y_position)
+
+        # Start a new thread for capturing the image
+        capture_thread = threading.Thread(target=self.capture_image_thread)
+        capture_thread.start()
+
+    def capture_image_thread(self):
         ret, frame = self.vid.read()
 
         if ret:
@@ -80,7 +92,9 @@ class WebcamApp:
 
 # Callback function to update the GUI with the received image
 def on_capture_callback(base64_image):
-    reply = "This is a long sentence that needs to be displayed on separate lines to ensure readability. It might contain multiple lines and can be quite lengthy."
+
+
+    reply = ModelManager(base64_image)
     words = reply.split()
     string_lists = [' '.join(words[i:i+10]) for i in range(0, len(words), 10)]
 
