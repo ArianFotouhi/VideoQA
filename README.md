@@ -5,7 +5,7 @@
   <img src="./asset/result_vid.gif" alt="video result">
 
 <h3>Result images:</h3>
-
-
+<h4>The frame that is being analyzed (capture is clicked)</h4>
   <img src="./asset/result1.jpg" alt="video result">
+  <h4>The result</h4>
   <img src="./asset/result2.jpg" alt="video result">
